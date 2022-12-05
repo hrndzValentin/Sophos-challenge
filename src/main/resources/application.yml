@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: manager-microservice
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/manager?zeroDateTimeBehavior=convertToNull&serverTimezone=UTC
+    username: root
+    password: V4l3nt1n.
