@@ -2,8 +2,6 @@ package com.example.demo.Controllers;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,9 +12,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.example.demo.DTOS.TestsDTO;
 import com.example.demo.Entitys.Tests;
-import com.example.demo.Repositories.TestsRepository;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.services.TestsService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("Tests")
@@ -35,23 +36,23 @@ public class TestsController {
 		return ResponseEntity.ok(tests);
 	}
 	
-	@RequestMapping(value= "{id}")
-	public ResponseEntity<Tests> getTestId(@PathVariable("id") int id){
+	@GetMapping(value= "{id}")
+	public ResponseEntity<Tests> getTestId(@PathVariable("id") int id) throws Exception{
 		Tests test = testsService.searchTestById(id);
 		
 		if(test == null) {
-			return ResponseEntity.notFound().build();
+			throw new ResourceNotFoundException("El id ingresado no fue encontrado en la DB");
 		}
 		return ResponseEntity.ok(test);
 		
 	}
 	
 	@PostMapping
-	public ResponseEntity<Tests> postTest(@RequestBody Tests test){
-		Tests newTest = testsService.sendTest(test);
+	public ResponseEntity<Tests> postTest(@RequestBody @Valid TestsDTO testDTO) throws Exception{
+		Tests newTest = testsService.sendTest(testDTO);
 		URI saved = URI.create("/save");
 		if(newTest == null) {
-			return ResponseEntity.notFound().build();
+			throw new ResourceNotFoundException("El test ingresado no cumple con el formato requerido");
 		}
 		return ResponseEntity.created(saved).build();
 		
@@ -68,12 +69,12 @@ public class TestsController {
 		
 	}
 	
-	@PutMapping
-	public ResponseEntity<Tests> putTest(@RequestBody Tests test){
-		Tests updatedTest = testsService.updateTest(test);
+	@PutMapping("{id}")
+	public ResponseEntity<Tests> putTest(@PathVariable("id") int id, @RequestBody @Valid TestsDTO testDTO) throws Exception{
+		Tests updatedTest = testsService.updateTest(testDTO, id);
 		URI updated = URI.create("/update");
 		if(updatedTest == null) {
-			return ResponseEntity.notFound().build();
+			throw new ResourceNotFoundException("El formato afiliado ingresado no cumple con el requerido");
 		}
 		return ResponseEntity.created(updated).build();
 	}

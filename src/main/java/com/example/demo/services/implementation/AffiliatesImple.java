@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.example.demo.DTOS.AffiliatesDTO;
 import com.example.demo.Entitys.Affiliates;
 import com.example.demo.Repositories.AffiliatesRepository;
 import com.example.demo.services.AffiliatesService;
@@ -35,9 +37,14 @@ public class AffiliatesImple implements AffiliatesService {
 	}
 
 	@Override
-	public Affiliates sendAffiliate(Affiliates affiliates) {
+	public Affiliates sendAffiliate(AffiliatesDTO affiliatesDTO) {
 		try {
-		Affiliates newAffiliate = affiliatesRepository.save(affiliates);
+		Affiliates affiliate = new Affiliates();
+		affiliate.setName(affiliatesDTO.getName());
+		affiliate.setAge(affiliatesDTO.getAge());
+		affiliate.setMail(affiliatesDTO.getMail());
+		
+		Affiliates newAffiliate = affiliatesRepository.save(affiliate);
 		return newAffiliate;
 		}catch(Exception e) {
 			return null;
@@ -48,23 +55,19 @@ public class AffiliatesImple implements AffiliatesService {
 	public Void removeAffiliate(int id) {
 		affiliatesRepository.deleteById(id);
 		return null;
+		
 	}
 
 	@Override
-	public Affiliates updateAffiliate(Affiliates affiliates) {
-		Optional<Affiliates> optionalAffiliate = affiliatesRepository.findById(affiliates.getAffiliateId());
-
+	public Affiliates updateAffiliate(AffiliatesDTO affiliatesDTO, int id) {
+		Optional<Affiliates> optionalAffiliate = affiliatesRepository.findById(id);
 		if (optionalAffiliate.isPresent()) {
-			try {
-			Affiliates updateAffiliate = optionalAffiliate.get();
-			updateAffiliate.setName(affiliates.getName());
-			updateAffiliate.setAge(affiliates.getAge());
-			updateAffiliate.setMail(affiliates.getMail());
-			affiliatesRepository.save(updateAffiliate);
-			return updateAffiliate;
-			}catch(Exception e) {
-				return null;
-			}
+			optionalAffiliate.get().setName(affiliatesDTO.getName());
+			optionalAffiliate.get().setAge(affiliatesDTO.getAge());
+			optionalAffiliate.get().setMail(affiliatesDTO.getMail());
+			affiliatesRepository.save(optionalAffiliate.get());
+			return optionalAffiliate.get();
+			
 		}
 			
 		return null;

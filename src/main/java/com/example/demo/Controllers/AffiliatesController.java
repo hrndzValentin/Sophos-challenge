@@ -13,8 +13,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.DTOS.AffiliatesDTO;
 import com.example.demo.Entitys.Affiliates;
+import com.example.demo.exceptions.ResourceNotFoundException;
 import com.example.demo.services.AffiliatesService;
+
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -29,28 +34,28 @@ public class AffiliatesController {
 		
 		List<Affiliates> affiliates = affiliatesService.searchAffiliates();
 		if(affiliates == null) {
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+			return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
 		}
 		return ResponseEntity.ok(affiliates);
 	}
 	
-	@RequestMapping(value= "{id}")
-	public ResponseEntity<Affiliates> getAffiliateById(@PathVariable("id") int id){
+	@GetMapping(value= "{id}")
+	public ResponseEntity<Affiliates> getAffiliateById(@PathVariable("id") int id) throws Exception{
 		Affiliates Affiliate = affiliatesService.searchAffiliateById(id);
 		
 		if(Affiliate == null) {
-			return ResponseEntity.notFound().build();
+			throw new ResourceNotFoundException("El Id : "+id+" no se encuentra en la DB");
 			
 		}
 		return ResponseEntity.ok(Affiliate);
 	}
 	
 	@PostMapping
-	public ResponseEntity<Affiliates> postAffiliate(@RequestBody Affiliates affiliates){
-		Affiliates newAffiliate = affiliatesService.sendAffiliate(affiliates);
+	public ResponseEntity<Affiliates> postAffiliate(@Valid @RequestBody AffiliatesDTO affiliatesDTO) throws Exception{
+		Affiliates newAffiliate = affiliatesService.sendAffiliate(affiliatesDTO);
 		URI saved = URI.create("/saved");
 		if(newAffiliate == null) {
-		return ResponseEntity.notFound().build();
+		throw new ResourceNotFoundException("El formato afiliado ingresado no cumple con el requerido");
 		}
 		
 		return ResponseEntity.created(saved).build();
@@ -58,7 +63,7 @@ public class AffiliatesController {
 	}
 	
 	@DeleteMapping(value="{id}")
-	public ResponseEntity<Void> deleteAffiliate(@PathVariable("id") int id){
+	public ResponseEntity<?> deleteAffiliate(@PathVariable("id") int id){
 		try {
 		affiliatesService.removeAffiliate(id);
 		return ResponseEntity.ok(null);
@@ -67,15 +72,15 @@ public class AffiliatesController {
 		}
 	}
 	
-	@PutMapping
-	public ResponseEntity<Affiliates> putAffiliate(@RequestBody Affiliates affiliates){
-		Affiliates affiliate = affiliatesService.updateAffiliate(affiliates);
+	@PutMapping("{id}")
+	public ResponseEntity<Affiliates> putAffiliate(@PathVariable("id") int id, @RequestBody @Valid AffiliatesDTO affiliatesDTO) throws Exception{
+		Affiliates affiliate = affiliatesService.updateAffiliate(affiliatesDTO, id);
 		URI updated = URI.create("/updaed");
 		if(affiliate == null) {
-			return ResponseEntity.notFound().build();
+			throw new ResourceNotFoundException("");
 		}
 		
 		return ResponseEntity.created(updated).build();
 		
 	}
-}
+} 

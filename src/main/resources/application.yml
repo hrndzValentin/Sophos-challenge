@@ -12,3 +12,9 @@ spring:
     url: jdbc:mysql://localhost:3306/manager?zeroDateTimeBehavior=convertToNull&serverTimezone=UTC
     username: root
     password: V4l3nt1n.
+  mvc:
+    throw-exception-if-no-handler-found: true
+  web:
+    resources:
+      add-mappings: false
+      

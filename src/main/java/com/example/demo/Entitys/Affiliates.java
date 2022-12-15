@@ -1,10 +1,14 @@
 package com.example.demo.Entitys;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,7 +28,22 @@ public class Affiliates {
 	
 	@Column(name="mail",nullable= false)
 	private String mail;
+	
+	@OneToMany(mappedBy = "affiliates", cascade = CascadeType.ALL)
+	private List<Appointments> appointments;
 
+	public List<Appointments> getAppointments() {
+		return appointments;
+	}
+
+	public void setAppointments(List<Appointments> appointments) {
+		this.appointments = appointments;
+		
+		for(Appointments appointment: appointments) {
+			appointment.setAffiliates(this);
+			}
+		}
+	
 	public int getAffiliateId() {
 		return affiliateId;
 	}

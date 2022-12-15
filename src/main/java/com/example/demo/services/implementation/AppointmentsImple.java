@@ -57,14 +57,15 @@ public class AppointmentsImple implements AppointmentsService {
 	}
 
 	@Override
-	public Appointments updateAppointment(Appointments appointment) {
-		Optional<Appointments> updateAppointment = appointmentsRepository.findById(appointment.getAppointmentId());
+	public Appointments updateAppointment(int id, Appointments appointment) {
+		Optional<Appointments> updateAppointment = appointmentsRepository.findById(id);
 		if (updateAppointment.isPresent()) {
 			try {
-				updateAppointment.get().setDate(appointment.getDate());
-				updateAppointment.get().setHour(appointment.getHour());
-				updateAppointment.get().setAffiliatesId(appointment.getAffiliatesId());
-				Appointments appointmentReturned = appointmentsRepository.save(updateAppointment.get());
+//				updateAppointment.get().setDate(appointment.getDate());
+//				updateAppointment.get().setHour(appointment.getHour());
+//				updateAppointment.get().setAffiliatesId(appointment.getAffiliatesId());
+				appointment.setAppointmentId(id);
+				Appointments appointmentReturned = appointmentsRepository.save(appointment);
 				return appointmentReturned;
 			} catch (Exception e) {
 				return null;

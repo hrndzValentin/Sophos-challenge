@@ -1,6 +1,5 @@
 package com.example.demo.Controllers;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -17,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import com.example.demo.DTOS.TestsDTO;
 import com.example.demo.Entitys.Tests;
 import com.example.demo.services.implementation.TestsImple;
 
@@ -37,23 +37,23 @@ class TestsTest {
 	}
 	
 	@Test
-	void getTestById() {
+	void getTestById() throws Exception {
 		when(testsImple.searchTestById(any(Integer.class))).thenReturn(null);
 		var response = testsController.getTestId(1);
 		Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
 	
 	@Test
-	void postTest() {
-		when(testsImple.sendTest(any(Tests.class))).thenReturn(new Tests());
-		var response = testsController.postTest(new Tests());
+	void postTest() throws Exception {
+		when(testsImple.sendTest(any(TestsDTO.class))).thenReturn(new Tests());
+		var response = testsController.postTest(new TestsDTO());
 		Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
 	}
 	
 	@Test
-	void putTest() {
-		when(testsImple.updateTest(any(Tests.class))).thenReturn(new Tests());
-		var response = testsController.putTest(new Tests());
+	void putTest() throws Exception {
+		when(testsImple.updateTest(any(TestsDTO.class), any(Integer.class))).thenReturn(new Tests());
+		var response = testsController.putTest(5, new TestsDTO());
 		Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
 	}

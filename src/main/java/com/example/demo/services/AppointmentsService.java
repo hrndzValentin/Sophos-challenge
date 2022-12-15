@@ -10,7 +10,7 @@ public interface AppointmentsService {
 	List<Appointments> searchAllAppointments();
 	Appointments searchById(int id);
 	Appointments sendAppointment(Appointments appointment);
-	Appointments updateAppointment(Appointments appointment);
+	Appointments updateAppointment(int id, Appointments appointment);
 	Void removeAppointment(int id);
 	Collection<Appointments> searchByAffiliate(int id);
 	Collection<Appointments> searchByDate(String appointment);

@@ -1,6 +1,5 @@
 package com.example.demo.Controllers;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -36,7 +35,7 @@ class AppointmentsTest {
 	}
 	
 	@Test
-	void testGetAppointmentsById() {
+	void testGetAppointmentsById() throws Exception {
 		when(appointmentsImple.searchById(any(Integer.class))).thenReturn(new Appointments());
 		var response = appointmentsController.getAppointmentById(5);
 		Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -44,7 +43,7 @@ class AppointmentsTest {
 	}
 	
 	@Test
-	void testPostAppointment() {
+	void testPostAppointment() throws Exception {
 		when(appointmentsImple.sendAppointment(any(Appointments.class))).thenReturn(new Appointments());
 		var response = appointmentsController.postAppointments(new Appointments());
 		Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -52,9 +51,9 @@ class AppointmentsTest {
 	}
 	
 	@Test
-	void testPutAppointment() {
-		when(appointmentsImple.updateAppointment(any(Appointments.class))).thenReturn(null);
-		var response = appointmentsController.putAppoitments(new Appointments());
+	void testPutAppointment() throws Exception {
+		when(appointmentsImple.updateAppointment(any(Integer.class), any(Appointments.class))).thenReturn(null);
+		var response = appointmentsController.putAppoitments(5, new Appointments());
 		Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
 

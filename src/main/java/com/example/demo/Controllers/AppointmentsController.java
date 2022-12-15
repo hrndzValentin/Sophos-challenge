@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.services.AppointmentsService;
 import com.example.demo.Entitys.Appointments;
+import com.example.demo.exceptions.ResourceNotFoundException;
 
 @RestController
 @RequestMapping("Appointments")
@@ -33,33 +35,32 @@ public class AppointmentsController {
 	}
 	 
 	@GetMapping("{id}")
-	public ResponseEntity<Appointments> getAppointmentById(@PathVariable("id") int id){
+	public ResponseEntity<Appointments> getAppointmentById(@PathVariable("id") int id) throws Exception{
 		Appointments appointment = appointmentsService.searchById(id);
 		if(!(appointment == null)) {
 			return ResponseEntity.ok(appointment);
 		}
 		
-		return ResponseEntity.notFound().build();
+		throw new ResourceNotFoundException("El Id : "+id+" no se encuentra en la DB");
     }
 	
 	@PostMapping
-	public ResponseEntity<?> postAppointments(@RequestBody Appointments appointment){
+	public ResponseEntity<?> postAppointments(@RequestBody Appointments appointment) throws Exception{
 		Appointments appointments = appointmentsService.sendAppointment(appointment);
 		URI saved = URI.create("/save");
 		if(appointments == null) {
-			return ResponseEntity.notFound().build();
+			throw new ResourceNotFoundException("El formato afiliado ingresado no cumple con el requerido");
 		}
 		return ResponseEntity.created(saved).build();
 	}
 	
-	@PutMapping
-	public ResponseEntity<Appointments> putAppoitments(Appointments appointment){
-		Appointments updateAppointment = appointmentsService.updateAppointment(appointment);
-		URI updated = URI.create("/update");
+	@PutMapping("{id}")
+	public ResponseEntity<Appointments> putAppoitments(@PathVariable int id, @RequestBody Appointments appointment) throws Exception{
+		Appointments updateAppointment = appointmentsService.updateAppointment(id, appointment);
 		if(updateAppointment == null) {
-			return ResponseEntity.notFound().build();
+			throw new ResourceNotFoundException("La cita con Id: " + id + " no fue encontrada en la DB");
 		}
-		return ResponseEntity.created(updated).build();
+		return new ResponseEntity<>(updateAppointment, HttpStatus.CREATED);
 		
 	}
 	
